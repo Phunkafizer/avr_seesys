@@ -40,11 +40,18 @@
 	#define PRESCALEREG TCCR0B
 	#define IRQFLAGBIT OCIE0A
 #elif (AVRTIMERNUM == 2)
-	#define TIMCOMPVECT TIMER2_COMP_vect
-	#define OCRREG OCR2
-	#define PRESCALEREG TCCR2
-	#define IRQFLAGBIT OCIE2
-#endif
+	#ifdef TIMER2_COMP_vect
+		#define TIMCOMPVECT TIMER2_COMP_vect
+		#define OCRREG OCR2
+		#define IRQFLAGBIT OCIE2
+	#else
+		#define TIMCOMPVECT TIMER2_COMPA_vect
+		#define OCRREG OCR2A
+		#define IRQFLAGBIT OCIE2A
+	#endif
+	
+	#define IRQREG TIMSK2
+	#define PRESCALEREG TCCR2B
 
 #if (AVRTIMERNUM == 0)
 	#if (F_CPU / TICKFREQUENCY) < MAXTIMERVAL
