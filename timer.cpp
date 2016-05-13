@@ -33,7 +33,7 @@ void Timer::Init() {
 	{//this is the first timer object, init hardware timer
 		PRESCALEREG = CSVAL;
 		OCRREG += OCRVAL;
-		TIMSK |= 1<<IRQFLAGBIT;
+		IRQREG |= 1<<IRQFLAGBIT;
 	}
 	
 	//append to list
@@ -54,7 +54,7 @@ bool Timer::IsFlagged(void) {
 }
 
 void Timer::SetTime(uint16_t ticks) {
-	TIMSK &= ~(1<<IRQFLAGBIT);
+	IRQREG &= ~(1<<IRQFLAGBIT);
 	cnt = ticks;
 	if (ticks)
 		timers_idle = false;
@@ -62,7 +62,7 @@ void Timer::SetTime(uint16_t ticks) {
 	flag = 0;
 	loadval = ticks;
 		
-	TIMSK |= 1<<IRQFLAGBIT;
+	IRQREG |= 1<<IRQFLAGBIT;
 }
 
 void Timer::irq() {
