@@ -41,18 +41,18 @@
 	#define IRQFLAGBIT OCIE0A
 #elif (AVRTIMERNUM == 2)
 	#ifdef TIMER2_COMP_vect
+		#define IRQREG TIMSK
 		#define TIMCOMPVECT TIMER2_COMP_vect
 		#define OCRREG OCR2
 		#define PRESCALEREG TCCR2
 		#define IRQFLAGBIT OCIE2
 	#else
+	    #define IRQREG TIMSK2
 		#define TIMCOMPVECT TIMER2_COMPA_vect
 		#define OCRREG OCR2A
 		#define PRESCALEREG TCCR2B
 		#define IRQFLAGBIT OCIE2A
 	#endif
-	
-	#define IRQREG TIMSK2
 #endif
 
 #if (AVRTIMERNUM == 0)
