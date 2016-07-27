@@ -11,7 +11,14 @@
 
 #include <avr/io.h>
 
-#define AVRTIMERNUM	2
+#ifndef AVRTIMERNUM
+	#error Please define symbol 'AVRTIMERNUM' (0-5) in project settings
+#endif
+
+#if ( (AVRTIMERNUM != 0) && (AVRTIMERNUM != 2) )
+	#error AVRTIMERNUM not yet supported, please use 0 or 2
+#endif
+
 /* timer overview, see datasheets for details
 	Timernum	width	prescalers
 	0			8		1, 8, 64, 256, 1024
@@ -39,6 +46,7 @@
 	#define OCRREG OCR0A
 	#define PRESCALEREG TCCR0B
 	#define IRQFLAGBIT OCIE0A
+	#define IRQREG TIMSK0
 #elif (AVRTIMERNUM == 2)
 	#ifdef TIMER2_COMP_vect
 		#define IRQREG TIMSK
