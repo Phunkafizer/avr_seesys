@@ -21,9 +21,9 @@
 
 /* timer overview, see datasheets for details
 	Timernum	width	prescalers
-	0			8		1, 8, 64, 256, 1024
+	0			8		1, 8, 64, 256, 1024 or 1, 8, 32, 64, 128, 256, 1024
 	1			16		1, 8, 64, 256, 1024
-	2			8		1, 8, 32, 64, 128, 256, 1024
+	2			8		1, 8, 64, 256, 1024 or 1, 8, 32, 64, 128, 256, 1024
 	3			16		1, 8, 64, 256, 1024
 	4			16		1, 8, 64, 256, 1024
 	5			16		1, 8, 64, 256, 1024
@@ -39,31 +39,45 @@
 #endif
 
 #if (AVRTIMERNUM == 0)
-	#ifndef OCIE0A
-		#error Timer 0 has no OC feature for timer 0. Please select a different timer in timer.h!
+	#if defined(OCIE0A)
+		#define PRESCALER_ROW 1
+		#define TIMCOMPVECT TIMER0_COMPA_vect
+		#define OCRREG OCR0A
+		#define PRESCALEREG TCCR0B
+		#define IRQFLAGBIT OCIE0A
+		#define IRQREG TIMSK0
+	#elif defined(OCIE0)
+		#define PRESCALER_ROW 2
+		#define TIMCOMPVECT TIMER0_COMP_vect
+		#define PRESCALEREG TCCR0
+		#define OCRREG OCR0
+		#define IRQREG TIMSK
+		#define IRQFLAGBIT OCIE0
+	#else
+	#error Timer 0 has no OC feature for timer 0. Please select a different timer in timer.h!
 	#endif
-	#define TIMCOMPVECT TIMER0_COMPA_vect
-	#define OCRREG OCR0A
-	#define PRESCALEREG TCCR0B
-	#define IRQFLAGBIT OCIE0A
-	#define IRQREG TIMSK0
+	
 #elif (AVRTIMERNUM == 2)
 	#ifdef TIMER2_COMP_vect
+		#define PRESCALER_ROW 1
 		#define IRQREG TIMSK
 		#define TIMCOMPVECT TIMER2_COMP_vect
 		#define OCRREG OCR2
 		#define PRESCALEREG TCCR2
 		#define IRQFLAGBIT OCIE2
 	#else
+		#define PRESCALER_ROW 2
 	    #define IRQREG TIMSK2
 		#define TIMCOMPVECT TIMER2_COMPA_vect
 		#define OCRREG OCR2A
 		#define PRESCALEREG TCCR2B
 		#define IRQFLAGBIT OCIE2A
 	#endif
+#else
+	#error not yet implemented
 #endif
 
-#if (AVRTIMERNUM == 0)
+#if (PRESCALER_ROW == 1)
 	#if (F_CPU / TICKFREQUENCY) < MAXTIMERVAL
 		#define CSVAL 1
 		#define PRESCAL 1UL
@@ -80,7 +94,7 @@
 		#define CSVAL 5
 		#define PRESCAL 1024UL
 	#endif
-#elif (AVRTIMERNUM == 2)
+#elif (PRESCALER_ROW == 2)
 	#if (F_CPU / TICKFREQUENCY) < MAXTIMERVAL
 		#define CSVAL 1
 		#define PRESCAL 1UL
@@ -103,8 +117,6 @@
 		#define CSVAL 7
 		#define PRESCAL 1024UL
 	#endif
-#else
-	#error not yet implemented
 #endif
 
 #ifndef CSVAL

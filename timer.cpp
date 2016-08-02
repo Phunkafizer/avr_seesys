@@ -32,7 +32,7 @@ void Timer::Init() {
 	if (lastobj == 0)
 	{//this is the first timer object, init hardware timer
 		PRESCALEREG = CSVAL;
-		OCRREG += OCRVAL;
+		OCRREG = OCRVAL;
 		IRQREG |= 1<<IRQFLAGBIT;
 	}
 	
@@ -67,6 +67,7 @@ void Timer::SetTime(uint16_t ticks) {
 
 void Timer::irq() {
 	static int32_t remainder = 0;
+	
 	remainder += F_CPU % TOTALDIV;
 	if (remainder > (int32_t) (TOTALDIV / 2)) {
 		remainder -= TOTALDIV;
