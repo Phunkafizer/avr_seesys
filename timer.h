@@ -3,7 +3,7 @@
 	header file for timer class
 	Stefan Seegel, post@seegel-systeme.de
 	feb 2011
-	last update apr 2016
+	last update okt 2016
 	http://opensource.org/licenses/gpl-license.php GNU Public License
 */
 #ifndef timer_h
@@ -12,11 +12,8 @@
 #include <avr/io.h>
 
 #ifndef AVRTIMERNUM
-	#error Please define symbol 'AVRTIMERNUM' (0-5) in project settings
-#endif
-
-#if ( (AVRTIMERNUM != 0) && (AVRTIMERNUM != 2) )
-	#error AVRTIMERNUM not yet supported, please use 0 or 2
+	#warning Please define symbol 'AVRTIMERNUM' (0-5) in project settings! Using default 0
+	#define AVRTIMERNUM 0
 #endif
 
 /* timer overview, see datasheets for details
@@ -29,7 +26,9 @@
 	5			16		1, 8, 64, 256, 1024
 */
 
-#define TICKFREQUENCY 1000UL	//Tickfrequency of timerobjects in Hz
+#ifndef TICKFREQUENCY
+	#define TICKFREQUENCY 1000UL	//Tickfrequency of timerobjects in Hz
+#endif
 
 
 #if ((AVRTIMERNUM == 0) || (AVRTIMERNUM == 2))
@@ -40,14 +39,12 @@
 
 #if (AVRTIMERNUM == 0)
 	#if defined(OCIE0A)
-		#define PRESCALER_ROW 1
 		#define TIMCOMPVECT TIMER0_COMPA_vect
 		#define OCRREG OCR0A
 		#define PRESCALEREG TCCR0B
 		#define IRQFLAGBIT OCIE0A
 		#define IRQREG TIMSK0
 	#elif defined(OCIE0)
-		#define PRESCALER_ROW 2
 		#define TIMCOMPVECT TIMER0_COMP_vect
 		#define PRESCALEREG TCCR0
 		#define OCRREG OCR0
@@ -56,17 +53,16 @@
 	#else
 	#error Timer 0 has no OC feature for timer 0. Please select a different timer in timer.h!
 	#endif
-	
+#elif (AVRTIMERNUM == 1)
+	#error not yet implemented, please complain to author!
 #elif (AVRTIMERNUM == 2)
 	#ifdef TIMER2_COMP_vect
-		#define PRESCALER_ROW 1
 		#define IRQREG TIMSK
 		#define TIMCOMPVECT TIMER2_COMP_vect
 		#define OCRREG OCR2
 		#define PRESCALEREG TCCR2
 		#define IRQFLAGBIT OCIE2
 	#else
-		#define PRESCALER_ROW 2
 	    #define IRQREG TIMSK2
 		#define TIMCOMPVECT TIMER2_COMPA_vect
 		#define OCRREG OCR2A
@@ -74,27 +70,10 @@
 		#define IRQFLAGBIT OCIE2A
 	#endif
 #else
-	#error not yet implemented
+	#error AVRTIMERNUM not yet implemented, please use TIMERNUM 0 or 2
 #endif
 
-#if (PRESCALER_ROW == 1)
-	#if (F_CPU / TICKFREQUENCY) < MAXTIMERVAL
-		#define CSVAL 1
-		#define PRESCAL 1UL
-	#elif (F_CPU / TICKFREQUENCY / 8) < MAXTIMERVAL
-		#define CSVAL 2
-		#define PRESCAL 8UL
-	#elif (F_CPU / TICKFREQUENCY / 64) < MAXTIMERVAL
-		#define CSVAL 3
-		#define PRESCAL 64UL
-	#elif (F_CPU / TICKFREQUENCY / 256) < MAXTIMERVAL
-		#define CSVAL 4
-		#define PRESCAL 256UL
-	#elif (F_CPU / TICKFREQUENCY / 1024) < MAXTIMERVAL
-		#define CSVAL 5
-		#define PRESCAL 1024UL
-	#endif
-#elif (PRESCALER_ROW == 2)
+#if ( (AVRTIMERNUM == 0) && defined(AS0) ) || ( (AVRTIMERNUM == 2) && defined(AS2) )
 	#if (F_CPU / TICKFREQUENCY) < MAXTIMERVAL
 		#define CSVAL 1
 		#define PRESCAL 1UL
@@ -115,6 +94,23 @@
 		#define PRESCAL 256UL
 	#elif (F_CPU / TICKFREQUENCY / 1024) < MAXTIMERVAL
 		#define CSVAL 7
+		#define PRESCAL 1024UL
+	#endif
+#else
+	#if (F_CPU / TICKFREQUENCY) < MAXTIMERVAL
+		#define CSVAL 1
+		#define PRESCAL 1UL
+	#elif (F_CPU / TICKFREQUENCY / 8) < MAXTIMERVAL
+		#define CSVAL 2
+		#define PRESCAL 8UL
+	#elif (F_CPU / TICKFREQUENCY / 64) < MAXTIMERVAL
+		#define CSVAL 3
+		#define PRESCAL 64UL
+	#elif (F_CPU / TICKFREQUENCY / 256) < MAXTIMERVAL
+		#define CSVAL 4
+		#define PRESCAL 256UL
+	#elif (F_CPU / TICKFREQUENCY / 1024) < MAXTIMERVAL
+		#define CSVAL 5
 		#define PRESCAL 1024UL
 	#endif
 #endif

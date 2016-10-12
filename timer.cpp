@@ -3,7 +3,7 @@
 	timer class
 	Stefan Seegel, post@seegel-systeme.de
 	created feb 2011
-	last update apr 2016
+	last update okt 2016
 	http://opensource.org/licenses/gpl-license.php GNU Public License
 */
 #include "timer.h"
