@@ -41,7 +41,6 @@ void Timer::Init() {
 	lastobj = this;
 }
 
-
 bool Timer::IsFlagged(void) {
 	if (flag) {	
 		flag = false;
@@ -51,6 +50,10 @@ bool Timer::IsFlagged(void) {
 	}
 	
 	return false;
+}
+
+Timer::operator bool() { 
+	return IsFlagged();
 }
 
 void Timer::SetTime(uint16_t ticks) {

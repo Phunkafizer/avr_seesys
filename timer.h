@@ -142,6 +142,7 @@ class Timer {
 		Timer(bool oneshot = true);
 		Timer(uint16_t ticks, bool oneshot = true);
 		bool IsFlagged(void);
+		operator bool(); // {return IsFlagged();}
 		void SetTime(uint16_t ticks);
 };
 
