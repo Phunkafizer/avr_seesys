@@ -1,5 +1,5 @@
 /*
- * global.cpp
+ * cpphelper.cpp
  *
  * Created: 04.05.2016 14:21:09
  *  Author: sseegel
